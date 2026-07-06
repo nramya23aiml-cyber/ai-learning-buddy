@@ -3,7 +3,7 @@ from huggingface_hub import InferenceClient
 
 client = InferenceClient(
     provider="hf-inference",
-    api_key="YOUR_HUGGINGFACE_TOKEN"
+    api_key="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"
 )
 
 st.set_page_config(page_title="AI Learning Buddy", page_icon="🎓")
