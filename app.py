@@ -1,7 +1,10 @@
 import streamlit as st
-from google import genai
+from huggingface_hub import InferenceClient
 
-client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
+client = InferenceClient(
+    provider="hf-inference",
+    api_key="YOUR_HUGGINGFACE_TOKEN"
+)
 
 st.set_page_config(page_title="AI Learning Buddy", page_icon="🎓")
 
@@ -20,7 +23,7 @@ option = st.selectbox(
 )
 
 if st.button("Generate"):
-    if topic == "":
+    if not topic.strip():
         st.warning("Please enter a topic.")
     else:
         if option == "Explain Concept":
@@ -28,13 +31,16 @@ if st.button("Generate"):
         elif option == "Real-Life Example":
             prompt = f"Give one simple real-life example of {topic}."
         elif option == "Generate Quiz":
-            prompt = f"Create 5 MCQs on {topic} with answers."
+            prompt = f"Create 5 multiple-choice questions with answers on {topic}."
         else:
             prompt = topic
 
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt
+        response = client.chat.completions.create(
+            model="Qwen/Qwen2.5-7B-Instruct",
+            messages=[
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=500,
         )
 
-        st.write(response.text)
+        st.write(response.choices[0].message.content)
